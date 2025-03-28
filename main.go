@@ -3,34 +3,59 @@ package main
 import (
 	"fmt"
 	"sync"
-	"time"
 )
 
-func printSomething(s string, wg *sync.WaitGroup) {
-	defer wg.Done()
-	fmt.Println(s)
+
+var wg sync.WaitGroup
+
+type Income struct {
+	Source string
+	Amount int
 }
 
 
 func main() {
-	// main function itself is a goroutine are a verry light weight thread not on hardware level thread are specific to go itself
-	// they take verry little memory run verry quickly and are all managed as a group of go routines is called co-routines 
-	// and are managed by go-scheduler
-	var wg sync.WaitGroup
 
-	words := []string{
-		"alpha", "beta", "delta", "gamma", "pi", "zeta", "eta", "theta", "epsilon",
+	// variable for bank balance
+	var bankBalance int
+	var balance sync.Mutex
+
+
+	// print out starting values
+	fmt.Printf("Initial account balance: $%d.00", bankBalance)
+	fmt.Println()
+
+	// define weekly revenue
+	incomes := []Income{
+		{Source: "Main job", Amount: 500},
+		{Source: "Gifts", Amount: 10},
+		{Source: "Part time job", Amount: 50},
+		{Source: "Investments", Amount: 100},
 	}
 
-	wg.Add(9) // what happen if we add more than the number of goroutines call 
-	// wg.Add(12) it will be in deadlock situation
-	for i, x := range words {
-		go printSomething(fmt.Sprintf("%d: %s", i, x), &wg)
+	wg.Add(len(incomes))
+	// loop through 52 weeks and print out how much is made; keep a running total
+	for i, income := range incomes {
+
+		go func (i int, income Income)  {
+			defer wg.Done()
+
+			for week := 1; week <= 52; week++ {
+				balance.Lock()
+				temp := bankBalance
+				temp += income.Amount
+				bankBalance = temp
+				balance.Unlock()
+
+				fmt.Printf("On Week %d, you earned $%d.00 from %s\n", week, income.Amount, income.Source)
+			}
+			
+		}(i, income)
 	}
 	wg.Wait()
 
-	wg.Add(2)
-	go printSomething("This is the first thing to be printed!", &wg)
-	time.Sleep(1 * time.Second) // shouldn't wait using time.sleep wait group is here to rescue
-	printSomething("This is the Second thing to be printed!", &wg)
+	// print out final balance
+	fmt.Printf("Final bank balance: $%d.00", bankBalance)
+	fmt.Println()
+
 }
