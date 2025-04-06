@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: 'postgres:14.2'
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: concurrency
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Named volume instead of host mount
+
+volumes:
+  postgres_data:  # Define the named volume
+
+
+
+
+
+
+
+
+
+
+
+
+
+# version: '3.8'
+
+# services:
+#   postgres:
+#     image: 'postgres:14.2'
+#     container_name: postgres-db
+#     ports:
+#       - "5432:5432"
+#     restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: password
+#       POSTGRES_DB: concurrency
+#     volumes:
+#       - ./db-data/postgres:/var/lib/postgresql/data
+# #     user: postgres  # Ensures it runs with the correct user
+
+# version: '3.8'
+
+# services:
+#   postgres:
+#     image: 'postgres:14.2'
+#     container_name: postgres-db
+#     ports:
+#       - "5432:5432"
+#     restart: always
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: password
+#       POSTGRES_DB: concurrency
+#     volumes:
+#       - ./db-data/postgres:/var/lib/postgresql/data
